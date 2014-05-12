@@ -87,7 +87,7 @@
         url ((some-fn :ssh_url :git_url :clone_url) repo)]
     (if-not (repo-matching repos url)
       (if (orgs/add-team-repo team-id login name {:auth token})
-        :authourised
+        :authorised
         :authorisation-failed)
       :already-authorised)))
 
