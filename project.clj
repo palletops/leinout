@@ -1,4 +1,4 @@
-(defproject com.palletops/leinout "0.1.0"
+(defproject com.palletops/leinout "0.1.1"
   :description "A library for doing things with git, github, travis and lein."
   :url "https://github.com/palletops/leinout"
   :license {:name "Eclipse Public License"
