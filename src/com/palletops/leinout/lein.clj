@@ -4,7 +4,8 @@
   (:require
    [clojure.edn :as edn]
    [clojure.java.io :refer [file]]
-   [leiningen.core.main :refer [apply-task debug info *exit-process?*]])
+   [leiningen.core.main
+    :refer [resolve-and-apply debug info *exit-process?*]])
   (:import
    java.io.File))
 
@@ -33,7 +34,7 @@
   (let [args (if (uses-lein-modules? project)
                (concat ["modules"] args)
                args)]
-    (apply-task (first args) project (rest args))))
+    (resolve-and-apply project args)))
 
 (defn clean
   [project]
