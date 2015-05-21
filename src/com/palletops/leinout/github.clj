@@ -35,7 +35,8 @@
   [server]
   (let [text (with-system-out-str
                (eval/sh
-                "/usr/local/bin/gpg2" "-q" "--no-tty" "-d"
+                (or (System/getenv "LEIN_GPG") "gpg")
+                "-q" "--no-tty" "-d"
                 (str (System/getProperty "user.home") "/.authinfo.gpg")))
         m (re-find
            (re-pattern
