@@ -4,7 +4,8 @@
    [clojure.string :as string :refer [blank? split-lines trim]]
    [leiningen.core.eval :as eval]
    [leiningen.core.main :refer [debug]]
-   [com.palletops.leinout.core :refer [fail fail-on-error]]))
+   [com.palletops.leinout.core
+    :refer [fail fail-on-error with-system-out-str]]))
 
 (defn ensure-origin
   "Ensure there is a git remote named 'origin'."
@@ -31,8 +32,11 @@
                                    l)]
        (assoc-in m [name (keyword direction)] url)))
    {}
-   (-> (with-out-str (fail-on-error (eval/sh "git" "remote" "-v")))
-       split-lines)))
+   (->>
+    (with-system-out-str
+      (fail-on-error (eval/sh "git" "remote" "-v")))
+    split-lines
+    (remove blank?))))
 
 (defn origin
   "Return the origin repository url string for the specified
@@ -94,16 +98,19 @@
   "Return the SHA for the current HEAD."
   []
   (debug "git rev-parse HEAD")
-  (trim (with-out-str (fail-on-error
-                       (eval/sh "git" "rev-parse" "HEAD")))))
+  (trim
+   (with-system-out-str
+     (fail-on-error
+      (eval/sh "git" "rev-parse" "HEAD")))))
 
 (defn ^String current-branch
   "Return the name of the current branch."
   []
   (debug "git current-branch")
   (let [sha (current-sha)
-        out (with-out-str (fail-on-error
-                           (eval/sh "git" "branch" "-v" "--no-abbrev")))
+        out (with-system-out-str
+              (fail-on-error
+               (eval/sh "git" "branch" "-v" "--no-abbrev")))
         line (->> out
                   (string/split-lines)
                   (filter #(.contains ^String % sha))

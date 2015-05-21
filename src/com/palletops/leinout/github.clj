@@ -3,6 +3,7 @@
   (:require
    [clojure.java.io :refer [file]]
    [clojure.string :refer [blank? join]]
+   [com.palletops.leinout.core :refer [with-system-out-str]]
    [leiningen.core.eval :as eval]
    [tentacles.orgs :as orgs]
    [tentacles.repos :as repos]))
@@ -17,7 +18,7 @@
   [server]
   (if (.exists (file "/usr/bin/security"))
     (let [r (atom nil)
-          result (with-out-str
+          result (with-system-out-str
                    ;; password is output on stderr
                    (binding [*err* *out*]
                      (reset!
@@ -32,9 +33,10 @@
 (defn- authinfo-for
   "Return a sequence with login and possibly a password from .authinfo."
   [server]
-  (let [text (with-out-str
+  (let [text (with-system-out-str
                (eval/sh
-                "/usr/local/bin/gpg2" "-q" "--no-tty" "-d"
+                (or (System/getenv "LEIN_GPG") "gpg")
+                "-q" "--no-tty" "-d"
                 (str (System/getProperty "user.home") "/.authinfo.gpg")))
         m (re-find
            (re-pattern
